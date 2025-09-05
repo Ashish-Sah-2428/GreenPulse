@@ -2,6 +2,8 @@ package com.example.mapapp;
 
 
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -18,7 +20,8 @@ public class TrafficRepository {
     private final MutableLiveData<List<TrafficLight>> trafficLightsLiveData = new MutableLiveData<>();
 
     public TrafficRepository() {
-        trafficRef = FirebaseDatabase.getInstance().getReference("traffic_lights");
+        trafficRef = FirebaseDatabase.getInstance().getReference("trafficLights");
+
         fetchTrafficLights();
     }
 
@@ -34,10 +37,11 @@ public class TrafficRepository {
                     }
                 }
                 trafficLightsLiveData.setValue(list);
+              //  Toast.makeText(MyApplication.getAppContext(), "Repo: " + list.size() + " lights fetched", Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
+            public void onCancelled(@NonNull DatabaseError error) { Log.e("FirebaseError!", error.getMessage());}
         });
     }
 
