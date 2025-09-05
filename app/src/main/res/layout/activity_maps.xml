@@ -12,6 +12,27 @@
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <LinearLayout
+        android:id="@+id/bottomInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:padding="8dp"
+
+        android:background="#AAFFFFFF"
+        tools:ignore="MissingConstraints">
+
+        <AutoCompleteTextView
+            android:textColor="@color/black"
+            android:id="@+id/etPlace"
+            android:textColorHint="#6F6C6C"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Your Destination"
+            android:inputType="text"/>
+    </LinearLayout>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
