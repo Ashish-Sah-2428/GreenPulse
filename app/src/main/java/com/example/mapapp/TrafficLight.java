@@ -23,4 +23,21 @@ public class TrafficLight {
     public String getAlert() { return alert; }
 }
 
-
+//
+//public class TrafficLight {
+//    private Double latitude = 0.0;
+//    private Double longitude = 0.0;
+//    private String redAlert = "false"; // default value
+//
+//    public TrafficLight() { }
+//
+//    // getters and setters
+//    public Double getLatitude() { return latitude; }
+//    public void setLatitude(Double latitude) { this.latitude = latitude; }
+//
+//    public Double getLongitude() { return longitude; }
+//    public void setLongitude(Double longitude) { this.longitude = longitude; }
+//
+//    public String getRedAlert() { return redAlert; }
+//    public void setRedAlert(String redAlert) { this.redAlert = redAlert; }
+//}

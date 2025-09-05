@@ -72,6 +72,8 @@ public class MapsActivity extends AppCompatActivity {
 
     private DatabaseReference trafficRef;
     private ValueEventListener trafficListener;
+    private List<Polygon> redAlertCircles = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -281,6 +283,7 @@ public class MapsActivity extends AppCompatActivity {
             radiusCircle.setFillColor(0x2000FF00);
             radiusCircle.setStrokeColor(0xFF00AA00);
             radiusCircle.setStrokeWidth(2f);
+            radiusCircle.setTitle(currentLocation.getLongitude()+","+currentLocation.getLatitude());
             map.getOverlays().add(radiusCircle);
         }
         radiusCircle.setPoints(Polygon.pointsAsCircle(center, radiusMeters));
@@ -374,22 +377,32 @@ public class MapsActivity extends AppCompatActivity {
     private void renderTrafficWithinRadius() {
         trafficRef.get().addOnSuccessListener(this::renderTrafficWithinRadius);
     }
+    //private List<Polygon> redAlert = new ArrayList<>();
 
     private void renderTrafficWithinRadius(DataSnapshot snapshot) {
         if (currentLocation == null) return;
 
-        // Clear only traffic markers, keep myMarker & circle
+        // Clear only traffic markers, keep myMarker & main radiusCircle
         trafficOverlay.getItems().clear();
+
+        // Remove old red alert circles
+        for (Polygon c : redAlertCircles) {
+            map.getOverlays().remove(c);
+        }
+        redAlertCircles.clear();
 
         for (DataSnapshot lightSnap : snapshot.getChildren()) {
             Double lat = lightSnap.child("lat").getValue(Double.class);
             Double lng = lightSnap.child("lng").getValue(Double.class);
             String status = lightSnap.child("status").getValue(String.class);
+            String redAlert = lightSnap.child("red_alert").getValue(String.class);
 
             if (lat == null || lng == null) continue;
 
             GeoPoint p = new GeoPoint(lat, lng);
             double dist = distanceMeters(currentLocation, p);
+
+            // Only traffic markers within 3km
             if (dist <= 3000) {
                 Marker m = new Marker(map);
                 m.setPosition(p);
@@ -404,9 +417,27 @@ public class MapsActivity extends AppCompatActivity {
                 }
                 trafficOverlay.add(m);
             }
+
+            // Add red alert circle if redalert == "true" and within any distance
+            if ("true".equalsIgnoreCase(redAlert)) {
+                Polygon alertCircle = new Polygon(map);
+                alertCircle.setPoints(Polygon.pointsAsCircle(p, 300)); // 300 meters
+                alertCircle.setFillColor(0x40FF0000); // semi-transparent red
+                alertCircle.setStrokeColor(0xFFFF0000);
+                alertCircle.setStrokeWidth(2f);
+                alertCircle.setTitle("High Traffic");
+
+                map.getOverlays().add(alertCircle);
+                redAlertCircles.add(alertCircle);
+
+
+            }
         }
+
         map.invalidate();
     }
+
+
 
     private double distanceMeters(GeoPoint a, GeoPoint b) {
         float[] res = new float[1];
