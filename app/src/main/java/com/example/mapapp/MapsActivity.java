@@ -73,6 +73,8 @@ public class MapsActivity extends AppCompatActivity {
     private DatabaseReference trafficRef;
     private ValueEventListener trafficListener;
     private List<Polygon> redAlertCircles = new ArrayList<>();
+    private List<Polygon> waterCircles = new ArrayList<>();
+
 
 
     @Override
@@ -239,7 +241,11 @@ public class MapsActivity extends AppCompatActivity {
         if (myMarker == null) {
             myMarker = new Marker(map);
             myMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-            myMarker.setIcon(getResources().getDrawable(R.drawable.baseline_man_24));
+            myMarker.setIcon(getResources().getDrawable(R.drawable.baseline_directions_walk_24));
+            myMarker.setRotation(0.0f);     // No rotation
+            myMarker.setFlat(false);        // Prevents auto-tilt/rotation
+            myMarker.setInfoWindow(null);   // Optional (only if popup ki zarurat nahi)
+
             map.getOverlays().add(myMarker);
         }
 
@@ -391,11 +397,18 @@ public class MapsActivity extends AppCompatActivity {
         }
         redAlertCircles.clear();
 
+
+        for (Polygon c : waterCircles) {
+            map.getOverlays().remove(c);
+        }
+        waterCircles.clear();
+
         for (DataSnapshot lightSnap : snapshot.getChildren()) {
             Double lat = lightSnap.child("lat").getValue(Double.class);
             Double lng = lightSnap.child("lng").getValue(Double.class);
             String status = lightSnap.child("status").getValue(String.class);
             String redAlert = lightSnap.child("red_alert").getValue(String.class);
+            String water = lightSnap.child("water").getValue(String.class);
 
             if (lat == null || lng == null) continue;
 
@@ -432,6 +445,19 @@ public class MapsActivity extends AppCompatActivity {
 
 
             }
+
+            if ("true".equalsIgnoreCase(water)) {
+                Polygon waterCircle = new Polygon(map);
+                waterCircle.setPoints(Polygon.pointsAsCircle(p, 100));
+                waterCircle.setFillColor(0x400000FF); // light transparent blue
+                waterCircle.setStrokeColor(0xFF0000FF); // solid blue border
+                waterCircle.setStrokeWidth(2f);
+                waterCircle.setTitle("Water Clogging");
+
+                map.getOverlays().add(waterCircle);
+                waterCircles.add(waterCircle);
+            }
+
         }
 
         map.invalidate();

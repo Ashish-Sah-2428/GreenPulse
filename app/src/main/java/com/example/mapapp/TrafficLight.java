@@ -7,20 +7,23 @@ public class TrafficLight {
     private double longitude;
     private String color;
     private String alert;
+    private String water;
 
     public TrafficLight() {}
 
-    public TrafficLight(double latitude, double longitude, String color, String alert) {
+    public TrafficLight(double latitude, double longitude, String color, String alert, String water) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.color = color;
         this.alert = alert;
+        this.water = water;
     }
 
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
     public String getColor() { return color; }
     public String getAlert() { return alert; }
+    public String getWater() { return water; }
 }
 
 //
